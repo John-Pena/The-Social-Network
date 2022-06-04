@@ -22,6 +22,11 @@ const userController = {
   },
 
   // create a user
+  createUser({ body }, res) {
+    User.create(body)
+      .then(userData => res.json(userData))
+      .catch(err => res.json(err));
+  },
 
   // update user by their id
 
