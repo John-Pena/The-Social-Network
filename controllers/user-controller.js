@@ -14,7 +14,13 @@ const userController = {
   // get one user by their id
   getUserById({ params }, res) {
     User.findOne({ _id: params.id })
-      .then(userData => res.json(userData))
+      .then(userData => {
+        if (!userData) {
+          res.status(404).json({ message: 'No user found with this id!' });
+          return;
+        }
+        res.json(userData);
+      })
       .catch(err => {
         console.log(err);
         res.sendStatus(400);
@@ -42,6 +48,17 @@ const userController = {
   },
 
   // delete a user by their id
-}
+  deleteUser({ params }, res) {
+    User.findOneAndDelete({ _id: params.id })
+    .then(userData => {
+      if (!userData) {
+        res.status(404).json({ message: 'No user found with this id!' })
+        return;
+      }
+      res.json(userData);
+    })
+    .catch(err => res.json(err));
+  }
+};
 
 module.exports = userController;
