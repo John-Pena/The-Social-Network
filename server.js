@@ -16,7 +16,6 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/the-socia
 // Use this to log mongo queries being executed
 mongoose.set('debug', true);
 
-// will uncomment when routes are set up
-// app.use(require('./routes'));
+app.use(require('./routes'));
 
 app.listen(PORT, () => console.log(`🌍 Connected on localhost:${PORT}`));

@@ -19,3 +19,5 @@ const userController = {
 
   // delete a user by their id
 }
+
+module.exports = userController;
