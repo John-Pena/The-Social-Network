@@ -1,5 +1,3 @@
-const { Module } = require('module');
-const { MongoGridFSChunkError } = require('mongodb');
 const { Schema, model } = require('mongoose');
 
 const UserSchema = new Schema(
