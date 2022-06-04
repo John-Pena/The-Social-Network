@@ -12,6 +12,14 @@ const userController = {
   },
   
   // get one user by their id
+  getUserById({ params }, res) {
+    User.findOne({ _id: params.id })
+      .then(userData => res.json(userData))
+      .catch(err => {
+        console.log(err);
+        res.sendStatus(400);
+      })
+  },
 
   // create a user
 
