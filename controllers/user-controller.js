@@ -29,6 +29,17 @@ const userController = {
   },
 
   // update user by their id
+  updateUser({ params, body }, res) {
+    User.findOneAndUpdate({ _id: params.id }, body, { new: true, runValidators: true })
+      .then(userData => {
+        if (!userData) {
+          res.status(404).json({ message: 'No user found by this id!' });
+          return;
+        }
+        res.json(userData);
+      })
+      .catch(err => res.json(err));
+  },
 
   // delete a user by their id
 }
