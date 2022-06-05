@@ -17,6 +17,27 @@ const thoughtController = {
       });
   },
   
+  // get thought by id
+  getThoughtById({ params }, res) {
+    Thought.findOne({ _id: params.id })
+      .populate({
+        path: 'reactions',
+        select: '-__v'
+      })
+      .select('-__v')
+      .then(userData => {
+        if (!userData) {
+          res.status(404).json({ message: 'No thought found with this id!' })
+          return;
+        }
+        res.json(userData);
+      })
+      .catch(err => {
+        console.log(err);
+        res.sendStatus(400);
+      })
+  },
+
   // add Thought
   addThought({ params, body }, res) {
     console.log(params);
