@@ -58,6 +58,22 @@ const thoughtController = {
       .catch(err => res.json(err));
   },
 
+  // update thought
+  updateThought({ params, body }, res) {
+    Thought.findOneAndUpdate(
+      { _id: params.thoughtId },
+      body,
+      { new: true, runValidators: true }
+    )
+    .then(thoughtData => {
+      if (!thoughtData) {
+        res.status(404).json({ message: 'No thought with this id!' })
+      }
+      res.json(thoughtData);
+    })
+    .catch(err => res.json(err));
+  },
+
   // add a reaction
   addReaction({ params, body }, res) {
     Thought.findOneAndUpdate(
