@@ -69,6 +69,69 @@ const userController = {
       res.json(userData);
     })
     .catch(err => res.json(err));
+  },
+
+  // add friend
+  addFriend({ params }, res) {
+    User.findOneAndUpdate(
+      { _id: params.id },
+      { $addToSet: { friends: params.friendId } },
+      { new: true, runValidators: true }
+    )
+      .populate({
+        path: 'friends',
+        select: '-__v'
+      })
+      .select('-__v')
+      .then(userData => {
+        if (!userData) {
+          res.status(404).json({ message: 'No user found with this id!' });
+          return;
+        }
+        User.findOneAndUpdate(
+          { _id: params.friendId },
+          { $addToSet: { friends: params.id } },
+          { new: true, runValidators: true }
+        )
+        .then(userData2 => {
+          if (!userData2) {
+            res.status(404).json({ message: 'No user found with this id!' });
+            return;
+          }
+          res.json(userData);
+        })
+        .catch(err => res.json(err));
+      })
+      .catch(err => res.json(err));
+  },
+
+  // remove friend
+  removeFriend({ params }, res){
+    User.findOneAndUpdate(
+      { _id: params.id },
+      { $pull: { friends: params.friendId } },
+      { new: true, runValidators: true }
+    )
+    .then(userData => {
+      if (!userData) {
+        res.status(404).json({ message: 'No user found with this id!' });
+        return;
+      }
+      User.findOneAndUpdate(
+        { _id: params.friendId },
+        { $pull: { friends: params.id } },
+        { new: true, runValidators: true }
+      )
+      .then(userData2 => {
+        if (!userData2) {
+          res.status(404).json({ message: 'No user found with this id!' });
+          return;
+        }
+        res.json(userData)
+      })
+      .catch(err => res.json(err));
+    })
+    .catch(err => res.json(err));
   }
 };
 
