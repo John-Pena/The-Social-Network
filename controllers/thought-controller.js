@@ -19,7 +19,7 @@ const thoughtController = {
   
   // get thought by id
   getThoughtById({ params }, res) {
-    Thought.findOne({ _id: params.id })
+    Thought.findOne({ _id: params.thoughtId })
       .populate({
         path: 'reactions',
         select: '-__v'
@@ -39,18 +39,16 @@ const thoughtController = {
   },
 
   // add Thought
-  addThought({ params, body }, res) {
-    console.log(params);
+  addThought({ body }, res) {
     Thought.create(body)
-      .then(({ _id }) => {
+      .then((thoughtData) => {
         return User.findOneAndUpdate(
-          { _id: params.userId },
-          { $push: { thoughts: _id } },
+          { _id: body.userId },
+          { $push: { thoughts: thoughtData._id } },
           { new: true }
         );
       })
       .then(userData => {
-        console.log(userData);
         if (!userData) {
           res.status(404).json({ message: 'No user found with this id!' });
           return;
@@ -78,6 +76,38 @@ const thoughtController = {
   },
 
   // remove Thought
+  removeThought({ params }, res) {
+    Thought.findOneAndDelete({ _id: params.thoughtId })
+      .then(deletedThought => {
+        if (!deletedThought) {
+          return res.status(404).json({ message: 'No thought with this id!' });
+        }
+        return User.findOneAndUpdate(
+          { _id: params.userId },
+          { $pull: { thoughts: params.thoughtId } },
+          { new: true }
+        );
+      })
+      .then(data => res.json(data))
+      .catch(err => res.json(err));
+  },
+
+  // remove reaction
+  removeReaction({ params }, res) {
+    Thought.findOneAndUpdate(
+      { _id:  params.thoughtId },
+      { $pull: { reactions: { reactionId: params.reactionId } } },
+      { new: true, runValidators: true }
+    )
+      .then(thoughtData => {
+        if (!thoughtData) {
+          res.status(404).json({ message: 'No reaction found with this id!' });
+          return;
+        }
+        res.json(thoughtData);
+      })
+      .catch(err => res.json(err));
+  }
 };
 
 module.exports = thoughtController;
